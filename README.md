@@ -3,6 +3,11 @@
 
 This is the frontend for the Task Management System, a web application to manage tasks efficiently with features like user authentication, task creation, status tracking, and more.
 
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
+![alt text](image-3.png)
+![alt text](image-4.png)
 ## Project Overview
 The Task Management System allows users to:
 - Register and log in securely
