@@ -1,5 +1,33 @@
-# Getting Started with Create React App
 
+# Task Management System - Frontend
+
+This is the frontend for the Task Management System, a web application to manage tasks efficiently with features like user authentication, task creation, status tracking, and more.
+
+## Project Overview
+The Task Management System allows users to:
+- Register and log in securely
+- Create, update, and delete tasks
+- Organize tasks by status (e.g., To Do, In Progress, Done)
+- View tasks in a Kanban-style dashboard
+
+## Features
+- User authentication (login/register)
+- Task creation and editing
+- Task status management
+- Responsive UI
+
+## Tech Stack
+- React (TypeScript)
+- Axios (API calls)
+- CSS Modules
+
+## Setup Instructions
+1. Clone the repository
+2. Run `npm install` to install dependencies
+3. Run `npm start` to launch the development server
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+# Getting Started with Create React App
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
