@@ -1,4 +1,6 @@
-import React from "react";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import TaskCard from "./TaskCard";
 
 
@@ -24,8 +26,15 @@ export default function TaskColumn({
   onDelete: (id: string) => void;
   refresh: () => void;
 }) {
+
+  
+
+  // Call handleAsyncError for demonstration (remove or replace in real usage)
+  // React.useEffect(() => { handleAsyncError(); }, []);
+
   return (
     <div className="column">
+      <ToastContainer position="top-right" autoClose={3000} />
       <h3>{title}</h3>
       {tasks.length === 0 ? (
         <p className="no-task">No tasks available</p>

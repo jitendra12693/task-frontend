@@ -1,4 +1,8 @@
 import React, { JSX } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { LoaderProvider, useLoader } from "./context/LoaderContext";
+import Loader from "./components/Loader";
 import { Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -12,9 +16,12 @@ const ProtectedRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
   return children;
 };
 
-export default function App() {
+function AppContent() {
+  const { loading } = useLoader();
   return (
     <div className="app-root">
+      <ToastContainer position="top-right" autoClose={3000} />
+      {loading && <Loader />}
       <Nav />
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -30,5 +37,13 @@ export default function App() {
         />
       </Routes>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <LoaderProvider>
+      <AppContent />
+    </LoaderProvider>
   );
 }

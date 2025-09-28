@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import api from "../api/axios";
+import api, { handleAsyncError } from "../api/axios";
 import { TaskStatus } from "./TaskStatus";
 import { useAuth } from "../context/AuthContext";
 import { buttonDefault, dangerButton, formControl, primaryButton, successButton } from "../index.style";
+import { toast, ToastContainer } from "react-toastify";
 
 type Task = {
   id: string;
@@ -23,10 +24,10 @@ export default function TaskCard({ task, onUpdate, onDelete, refresh }: { task: 
   const save = async () => {
     try {
       let body = {
-        title, 
+        title,
         description: description,
-        priority: task.priority, 
-        assigneeId: assigneeId, 
+        priority: task.priority,
+        assigneeId: assigneeId,
         id: task.id
       };
       const res = await api.put(`/task/updateTask/${task.id}`, body);
@@ -38,61 +39,78 @@ export default function TaskCard({ task, onUpdate, onDelete, refresh }: { task: 
     }
   };
 
+const [toastId, setToastId] = useState<string | number | undefined>(undefined);
+
+const showLoadingToast = () => {
+  const id = toast("Logging in...", {
+    autoClose: false,
+    closeOnClick: false,
+  });
+  setToastId(id);
+};
+
   const advance = async () => {
     try {
       // simple state transition
       const next = task.status === "TODO" ? TaskStatus.IN_PROGRESS : task.status === "IN_PROGRESS" ? TaskStatus.DONE : TaskStatus.DONE;
       const res = await api.put(`/task/updateTask/${task.id}`, { ...task, status: next });
-      
+
       onUpdate(res.data?.result || { ...task, status: next });
     } catch (e) {
       alert("Status update failed");
     }
   };
-
+  const id = toast("Hello!");
   const handleDelete = async () => {
     if (!window.confirm("Are you sure to remove this task?")) return;
     try {
       await api.delete(`/task/${task.id}`);
       onDelete(task.id);
+      //toast.success("Task deleted successfully", { autoClose: 2000 });
+      //handleAsyncError("success","✅  Task deleted successfully."); // Example usage
+      //toast.success( "✅  Task deleted successfully.",);
+      //alert("✅  Task deleted successfully.");
+      //refresh();
     } catch (e) {
-      alert("Delete failed");
+      alert(" Delete failed");
     }
   };
 
   return (
-    <div className="task-card">
-      {editing ? (
-        <>
-          <input className={formControl} value={title} onChange={(e) => setTitle(e.target.value)} />
-          <p><textarea className={formControl} value={description} onChange={(e) => setDescription(e.target.value)} /></p>
-          <p>
-            <select className={formControl} onChange={(e) => setAssigneeId(e.target.value)} value={assigneeId}>
-              <option value="Select User">Select User</option>
-              {userList.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.username}
-                </option>
-              ))}
-            </select>
-          </p>
-          <div>
-            <button onClick={save} className={successButton}>Save</button>
-            <button onClick={() => setEditing(false)} className={dangerButton} >Cancel</button>
-          </div>
-        </>
-      ) : (
-        <>
-          <h4>{task.title} </h4>
-          <h5>{task?.assignee}</h5>
-          <p>{task.description}</p>
-          <div className="card-actions">
-            <button className={primaryButton} onClick={() => setEditing(true)}>Edit</button>
-            <button className={buttonDefault} onClick={advance}>Change Status</button>
-            <button className={dangerButton} onClick={handleDelete}>Delete</button>
-          </div>
-        </>
-      )}
-    </div>
+    <>
+      <div className="task-card">
+        {editing ? (
+          <>
+            <input className={formControl} value={title} onChange={(e) => setTitle(e.target.value)} />
+            <p><textarea className={formControl} value={description} onChange={(e) => setDescription(e.target.value)} /></p>
+            <p>
+              <select className={formControl} onChange={(e) => setAssigneeId(e.target.value)} value={assigneeId}>
+                <option value="Select User">Select User</option>
+                {userList.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.username}
+                  </option>
+                ))}
+              </select>
+            </p>
+            <div>
+              <button onClick={save} className={successButton}>Save</button>
+              <button onClick={() => setEditing(false)} className={dangerButton} >Cancel</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <h4>{task.title} </h4>
+            <h5>{task?.assignee}</h5>
+            <p>{task.description}</p>
+            <div className="card-actions">
+              <button className={primaryButton} onClick={() => setEditing(true)}>Edit</button>
+              <button className={buttonDefault} onClick={advance}>Change Status</button>
+              <button className={dangerButton} onClick={handleDelete}>Delete</button>
+            </div>
+          </>
+        )}
+      </div>
+    </>
   );
 }

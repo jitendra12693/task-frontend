@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
@@ -8,13 +8,15 @@ import { error, formControl, successButton } from "../index.style";
 type Form = { username: string; password: string };
 
 export default function LoginPage() {
+  const [isLoading, setIsLoading] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm<Form>();
   const { login } = useAuth();
   const nav = useNavigate();
   const onSubmit = async (data: Form) => {
+    setIsLoading(true);
     try {
       const res = await api.post("/auth/login", data);
-      if(res?.data?.statusCode !== 200){
+      if (res?.data?.statusCode !== 200) {
         throw new Error(res?.data?.statusMessage || "Login failed");
       }
       // Extract data from token (assuming JWT)
@@ -22,18 +24,15 @@ export default function LoginPage() {
       if (token) {
         const payload = JSON.parse(atob(token.split('.')[1]));
         console.log("Token payload:", payload);
-        const user = {
-          id: payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"],
-          email: payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
-          name: payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
-          role: payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
-        };
+        
         // You can use payload data as needed
       }
       login(res.data.result || res.data.result || res.data); // some backend formats
       nav("/dashboard");
     } catch (err: any) {
       alert(err?.response?.data?.message || "Login failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -47,7 +46,7 @@ export default function LoginPage() {
         <label>Password</label>
         <input className={formControl} type="password" {...register("password", { required: "Password is required" })} />
         {errors.password && <p className={error}>{errors.password.message}</p>}
-        <button className={successButton} type="submit">Login</button>
+        <button className={successButton} disabled={isLoading} type="submit">Login</button>
       </form>
       <p>
         Don't have an account? <Link to="/register">Register</Link>
